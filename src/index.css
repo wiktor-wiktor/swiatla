@@ -1,0 +1,28 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  --color-green: #539165;
+  --color-navy: #3F497F;
+  --color-yellow: #F7C04A;
+  --color-beige: #F8F5E4;
+
+  --background-color: var(--color-navy);
+  --font-color: var(--color-beige);
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--color-beige);
+
+  padding: 1rem;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+
+}
