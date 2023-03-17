@@ -2,13 +2,16 @@ import React from "react";
 
 type props = {
   title: string;
+  className?: string;
   children?: React.ReactNode | null;
 };
 
-const Section = ({ title, children }: props) => {
-  return <div className="section">
+const Section = ({ title, className, children }: props) => {
+  return <div className='section'>
     <h2>{ title }</h2>
-    { children }
+    <div className={ className }>
+      { children }
+    </div>
   </div>
 }
 
