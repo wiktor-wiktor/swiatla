@@ -6,12 +6,12 @@ export type performance = {
     hubIP?: string;
     minActive: number;
     maxActive: number;
+    username: string;
   };
   notifications: {
     clickHubButton: boolean;
   };
   isConnected: boolean;
-  isConnecting: boolean;
 };
 
 export const INITIAL_STATE: performance = {
@@ -19,12 +19,12 @@ export const INITIAL_STATE: performance = {
   config: {
     minActive: 1,
     maxActive: 4,
+    username: '',
   },
   notifications: {
     clickHubButton: false,
   },
   isConnected: false,
-  isConnecting: false,
 };
 
 export const ACTIONS = {
@@ -35,7 +35,7 @@ export const ACTIONS = {
   SET_MIN_ACTIVE: 'SET_MIN_ACTIVE',
   SET_MAX_ACTIVE: 'SET_MAX_ACTIVE',
   SET_IS_CONNECTED: 'SET_IS_CONNECTED',
-  SET_IS_CONNECTING: 'SET_IS_CONNECTING',
+  SET_USERNAME: 'SET_USERNAME',
 };
 
 export const performanceReducer = (
@@ -46,7 +46,16 @@ export const performanceReducer = (
     case ACTIONS.ADD_LIGHTBULB:
       for (let i = 0; i < state.lightbulbs.length; i++) {
         if (state.lightbulbs[i].id === action.payload.id) {
-          return state;
+          return {
+            ...state,
+            lightbulbs: state.lightbulbs.map((lightbulb) => {
+              if (lightbulb.id === action.payload.id) {
+                lightbulb.name = action.payload.name;
+                lightbulb.state = action.payload.state;
+              }
+              return lightbulb;
+            }),
+          };
         }
       }
 
@@ -103,10 +112,13 @@ export const performanceReducer = (
         ...state,
         isConnected: action.payload,
       };
-    case ACTIONS.SET_IS_CONNECTING:
+    case ACTIONS.SET_USERNAME:
       return {
         ...state,
-        isConnecting: action.payload,
+        config: {
+          ...state.config,
+          username: action.payload,
+        },
       };
     default:
       return state;
