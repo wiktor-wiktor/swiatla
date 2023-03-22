@@ -17,12 +17,14 @@ const LightbulbPreview = ({ lightbulb }: { lightbulb: lightbulb }) => {
       },
     });
   };
-
+  console.log('lightbulb', lightbulb);
   return (
     <div
       onClick={handleClick}
       key={lightbulb.id}
-      className={styles.lightbulbPreview}
+      className={`${styles.lightbulbPreview} ${
+        lightbulb.reachable && styles.reachable
+      }`}
     >
       <div
         className={`${styles.stateIndicator} ${lightbulb.state && styles.on}`}

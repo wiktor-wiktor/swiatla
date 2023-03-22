@@ -4,7 +4,6 @@ import { PerformanceContext } from '../../contexts/PerformanceContext';
 import { ACTIONS } from '../../reducers/performanceReducer';
 
 import styles from './config-section.module.scss';
-import LightbulbDiscoveryService from '../../services/LightbulbDiscoveryService';
 
 export const ConfigSection = () => {
   const performanceState = useContext(PerformanceContext);

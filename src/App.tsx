@@ -12,22 +12,29 @@ import LightbulbDiscoveryService from './services/LightbulbDiscoveryService';
 import { LightbulbsSection } from './components/LightbulbsSection/LightbulbsSection';
 import { ConfigSection } from './components/ConfigSection/ConfigSection';
 import { ConnectionDialog } from './components/ConnectionDialog/ConnectionDialog';
+import { TimelineSection } from './components/TimelineSection/TimelineSection';
 
 const App = () => {
   const [state, dispatch] = useReducer(performanceReducer, INITIAL_STATE);
 
+  const refreshLightbulbsState = () => {
+    LightbulbDiscoveryService.discoverLightbulbs(
+      state.config.hubIP,
+      state.config.username,
+    ).then((lightbulbs) => {
+      lightbulbs.forEach((lightbulb) => {
+        dispatch({ type: ACTIONS.ADD_LIGHTBULB, payload: lightbulb });
+      });
+    });
+  };
+
   useEffect(() => {
     if (state.isConnected) {
+      //refreshLightbulbsState();
+
       const lightbulbRefreshIntervalID = setInterval(() => {
-        LightbulbDiscoveryService.discoverLightbulbs(
-          state.config.hubIP,
-          state.config.username,
-        ).then((lightbulbs) => {
-          lightbulbs.forEach((lightbulb) => {
-            dispatch({ type: ACTIONS.ADD_LIGHTBULB, payload: lightbulb });
-          });
-        });
-      }, 100);
+        refreshLightbulbsState();
+      }, 1100);
 
       return () => {
         clearInterval(lightbulbRefreshIntervalID);
@@ -40,10 +47,10 @@ const App = () => {
       <div className="App">
         {state.isConnected && (
           <MainContainer>
+            <Section title="Performance preview"></Section>
+            <TimelineSection />
             <LightbulbsSection />
             <Section title="Groups"></Section>
-            <Section title="Timeline"></Section>
-            <Section title="Performance preview"></Section>
           </MainContainer>
         )}
         {!state.isConnected && <ConnectionDialog />}

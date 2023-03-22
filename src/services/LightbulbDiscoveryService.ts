@@ -51,6 +51,7 @@ class LightbulbDiscoveryService {
                 id: parseInt(id),
                 name: lightbulb.name,
                 state: lightbulb.state.on,
+                reachable: lightbulb.state.reachable,
               };
             },
           );
@@ -61,6 +62,36 @@ class LightbulbDiscoveryService {
       .catch((error) => {
         console.log('Lights discovery error: ', error);
         return [];
+      });
+  }
+
+  public async setLightbulbState(
+    hubIP: string,
+    username: string,
+    id: number,
+    state: boolean,
+  ): Promise<boolean> {
+    return fetch(`http://${hubIP}/api/${username}/lights/${id}/state`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        on: state,
+      }),
+    })
+      .then((response) => {
+        return response.json().then((response) => {
+          if (response[0].error) {
+            return false;
+          }
+
+          return true;
+        });
+      })
+      .catch((error) => {
+        console.log('Lightbulb state switch error: ', error);
+        return false;
       });
   }
 }

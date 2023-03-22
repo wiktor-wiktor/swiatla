@@ -4,6 +4,7 @@
 
   .lightbulbPreview {
     margin: 1rem;
+    opacity: .3;
 
     .name {
       text-align: center;
@@ -13,7 +14,7 @@
       background-color: var(--background-color);
       border: 3px solid var(--color-beige);
       border-radius: 50%;
-
+      
       margin-bottom: 1rem;
       height: 120px;
       width: 120px;
@@ -21,6 +22,10 @@
       &.on {
         background-color: var(--color-beige);
       }
+    }
+
+    &.reachable {
+      opacity: 1;
     }
   }
 }

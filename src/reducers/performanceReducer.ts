@@ -1,3 +1,4 @@
+import LightbulbDiscoveryService from '../services/LightbulbDiscoveryService';
 import { lightbulb } from '../types';
 
 export type performance = {
@@ -52,6 +53,7 @@ export const performanceReducer = (
               if (lightbulb.id === action.payload.id) {
                 lightbulb.name = action.payload.name;
                 lightbulb.state = action.payload.state;
+                lightbulb.reachable = action.payload.reachable;
               }
               return lightbulb;
             }),
@@ -64,6 +66,12 @@ export const performanceReducer = (
         lightbulbs: [...state.lightbulbs, action.payload],
       };
     case ACTIONS.SET_LIGHTBULB_STATE:
+      LightbulbDiscoveryService.setLightbulbState(
+        state.config.hubIP || '',
+        state.config.username,
+        action.payload.id,
+        action.payload.state,
+      );
       return {
         ...state,
         lightbulbs: state.lightbulbs.map((lightbulb) => {
