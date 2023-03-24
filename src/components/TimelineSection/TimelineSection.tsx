@@ -4,6 +4,7 @@ import Section from '../../layout/Section';
 import { useContext } from 'react';
 import { PerformanceContext } from '../../contexts/PerformanceContext';
 import { ACTIONS } from '../../reducers/performanceReducer';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 export const TimelineSection = () => {
   const [playbackState, setPlaybackState] = useState<
@@ -11,15 +12,23 @@ export const TimelineSection = () => {
   >('stopped');
   const [length, setLength] = useState(24);
   const currentPosition = useRef(0);
-  const timelineMatrix = useRef<{ [key: number]: boolean[] }>(
+
+  const [timelineMatrix, setTimelineMatrix] = useLocalStorage(
+    'timelineMatrix',
     {} as { [key: number]: boolean[] },
   );
 
   const performanceState = useContext(PerformanceContext);
 
   const getMatrixRowForLightbulb = (lightbulbID: number, rowLabel?: string) => {
-    if (!timelineMatrix.current[lightbulbID]) {
-      timelineMatrix.current[lightbulbID] = new Array(length).fill(false);
+    let rowData = timelineMatrix[lightbulbID];
+    if (!timelineMatrix[lightbulbID]) {
+      const newLightbulbRow = new Array(length).fill(false);
+      rowData = newLightbulbRow;
+      setTimelineMatrix({
+        ...timelineMatrix,
+        [lightbulbID]: newLightbulbRow,
+      });
     }
 
     return (
@@ -31,10 +40,18 @@ export const TimelineSection = () => {
               key={`${lightbulbID}-${index}`}
               className={`${styles.cell} ${
                 index === currentPosition.current && styles.currentPosition
-              } ${timelineMatrix.current[lightbulbID][index] && styles.on}`}
+              } ${rowData[index] && styles.on}`}
               onClick={() => {
-                timelineMatrix.current[lightbulbID][index] =
-                  !timelineMatrix.current[lightbulbID][index];
+                const newTimelineMatrix = {
+                  ...timelineMatrix,
+                  [lightbulbID]: rowData.map((cell, cellIndex) => {
+                    if (cellIndex === index) {
+                      return !cell;
+                    }
+                    return cell;
+                  }),
+                };
+                setTimelineMatrix(newTimelineMatrix);
               }}
             ></div>
           );
@@ -49,13 +66,12 @@ export const TimelineSection = () => {
         currentPosition.current = (currentPosition.current + 1) % length;
 
         performanceState.state.lightbulbs.forEach((lightbulb) => {
-          if (timelineMatrix.current[lightbulb.id]) {
+          if (timelineMatrix[lightbulb.id]) {
             performanceState.dispatch({
               type: ACTIONS.SET_LIGHTBULB_STATE,
               payload: {
                 id: lightbulb.id,
-                state:
-                  timelineMatrix.current[lightbulb.id][currentPosition.current],
+                state: timelineMatrix[lightbulb.id][currentPosition.current],
               },
             });
           }
