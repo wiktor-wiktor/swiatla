@@ -56,6 +56,9 @@ export const performanceReducer = (
                 lightbulb.name = action.payload.name;
                 lightbulb.state = action.payload.state;
                 lightbulb.reachable = action.payload.reachable;
+                lightbulb.brightness =
+                  action.payload.brightness || lightbulb.brightness;
+                lightbulb.caption = action.payload.caption || lightbulb.caption;
               }
               return lightbulb;
             }),

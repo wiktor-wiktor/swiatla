@@ -41,36 +41,6 @@ export const LightbulbsSection = () => {
   const [lightbulbsLastSettings, setLightbulbsLastSettings] =
     useLightbulbsLastSettings();
 
-  useEffect(() => {
-    performanceState.state.lightbulbs.forEach((lightbulb) => {
-      if (
-        lightbulbsLastSettings[lightbulb.id] !== undefined &&
-        lightbulbsLastSettings[lightbulb.id].bri !== lightbulb.brightness
-      ) {
-        performanceState.dispatch({
-          type: ACTIONS.SET_LIGHTBULB_BRIGHTNESS,
-          payload: {
-            id: lightbulb.id,
-            brightness: lightbulbsLastSettings[lightbulb.id].bri,
-          },
-        });
-      }
-
-      if (
-        lightbulbsLastSettings[lightbulb.id] !== undefined &&
-        lightbulbsLastSettings[lightbulb.id].caption !== lightbulb.caption
-      ) {
-        performanceState.dispatch({
-          type: ACTIONS.SET_LIGHTBULB_CAPTION,
-          payload: {
-            id: lightbulb.id,
-            state: lightbulbsLastSettings[lightbulb.id].caption,
-          },
-        });
-      }
-    });
-  }, []);
-
   return (
     <Section className={styles.lightbulbsSection} title="Lightbulbs">
       <div className={styles.lightbulbsTable}>

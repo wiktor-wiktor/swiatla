@@ -13,17 +13,45 @@ import { LightbulbsSection } from './components/LightbulbsSection/LightbulbsSect
 import { ConfigSection } from './components/ConfigSection/ConfigSection';
 import { ConnectionDialog } from './components/ConnectionDialog/ConnectionDialog';
 import { TimelineSection } from './components/TimelineSection/TimelineSection';
+import { PerformancePreviewSection } from './components/PerformancePreviewSection/PerormancePreviewSection';
+import { useLightbulbsLastSettings } from './hooks/useLightbulbsLastSettings';
 
 const App = () => {
   const [state, dispatch] = useReducer(performanceReducer, INITIAL_STATE);
+  const [lightbulbsSettings, setLightbulbsSettings] =
+    useLightbulbsLastSettings();
 
-  const refreshLightbulbsState = () => {
+  const refreshLightbulbsState = (full: boolean) => {
     LightbulbDiscoveryService.discoverLightbulbs(
       state.config.hubIP,
       state.config.username,
     ).then((lightbulbs) => {
       lightbulbs.forEach((lightbulb) => {
-        dispatch({ type: ACTIONS.ADD_LIGHTBULB, payload: lightbulb });
+        let payload = {};
+        if (full) {
+          payload = {
+            id: lightbulb.id,
+            name: lightbulb.name,
+            caption:
+              lightbulbsSettings[lightbulb.id]?.caption || lightbulb.name,
+            reachable: lightbulb.reachable,
+            state: lightbulb.state,
+            brightness: lightbulb.brightness,
+          };
+        } else {
+          payload = {
+            id: lightbulb.id,
+            name: lightbulb.name,
+            reachable: lightbulb.reachable,
+            state: lightbulb.state,
+            brightness: lightbulb.brightness,
+          };
+        }
+
+        dispatch({
+          type: ACTIONS.ADD_LIGHTBULB,
+          payload,
+        });
       });
     });
   };
@@ -32,8 +60,9 @@ const App = () => {
     if (state.isConnected) {
       //refreshLightbulbsState();
 
+      refreshLightbulbsState(true);
       const lightbulbRefreshIntervalID = setInterval(() => {
-        refreshLightbulbsState();
+        refreshLightbulbsState(false);
       }, 1100);
 
       return () => {
@@ -47,7 +76,7 @@ const App = () => {
       <div className="App">
         {state.isConnected && (
           <MainContainer>
-            <Section title="Performance preview"></Section>
+            <PerformancePreviewSection />
             <TimelineSection />
             <LightbulbsSection />
             <Section title="Groups"></Section>

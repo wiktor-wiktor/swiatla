@@ -1,0 +1,63 @@
+.performancePreview {
+  border: 3px solid var(--color-beige);
+  border-radius: 3px;
+  width: 72vw;
+  height: 24vw;
+  margin: 2rem auto;
+  position: relative;
+
+  .lightbulbPreview {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 106px;
+    width: 106px;
+    text-align: center;
+    opacity: .3;
+    position: absolute;
+    user-select: none;
+
+    top: var(--y);
+    left: var(--x);
+
+    .stateIndicator {
+      background-color: var(--background-color);
+      border: 3px solid var(--color-beige);
+      border-radius: 50%;
+      display: inline-block;
+      margin-bottom: 4px;
+      
+      height: 60px;
+      width: 60px;
+
+      &.on {
+        background-color: var(--color-beige);
+      }
+    }
+
+    &:hover {
+      .stateIndicator {
+        border: 3px solid var(--color-green);
+      }
+    };
+
+
+    &.reachable {
+      opacity: 1;
+    }
+
+    .caption {
+      color: var(--color-beige);
+      font-size: .8rem;
+      font-weight: 400;
+      text-transform: uppercase;
+    }
+
+    .name {
+      color: var(--color-beige);
+      font-size: .5rem;
+      margin: 2px 0;
+    }    
+  }
+}
