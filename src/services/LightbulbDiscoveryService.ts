@@ -51,6 +51,7 @@ class LightbulbDiscoveryService {
                 id: parseInt(id),
                 name: lightbulb.name,
                 state: lightbulb.state.on,
+                brightness: lightbulb.state.bri,
                 reachable: lightbulb.state.reachable,
               };
             },
@@ -69,7 +70,8 @@ class LightbulbDiscoveryService {
     hubIP: string,
     username: string,
     id: number,
-    state: boolean,
+    stateKey: 'on' | 'bri',
+    stateValue: boolean | number,
   ): Promise<boolean> {
     return fetch(`http://${hubIP}/api/${username}/lights/${id}/state`, {
       method: 'PUT',
@@ -77,7 +79,7 @@ class LightbulbDiscoveryService {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        on: state,
+        [stateKey]: stateValue,
       }),
     })
       .then((response) => {

@@ -32,7 +32,7 @@ export const TimelineSection = () => {
     }
 
     return (
-      <div className={styles.row}>
+      <div className={styles.row} key={`timeline-row-${lightbulbID}`}>
         <div className={styles.rowLabel}>{rowLabel}</div>
         {[...Array(length)].map((_, index) => {
           return (

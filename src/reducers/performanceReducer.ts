@@ -32,6 +32,8 @@ export const ACTIONS = {
   ADD_LIGHTBULB: 'ADD_LIGHTBULB',
   SET_LIGHTBULB_STATE: 'SET_LIGHTBULB_STATE',
   SET_LIGHTBULB_NAME: 'SET_LIGHTBULB_NAME',
+  SET_LIGHTBULB_BRIGHTNESS: 'SET_LIGHTBULB_BRIGHTNESS',
+  SET_LIGHTBULB_CAPTION: 'SET_LIGHTBULB_CAPTION',
   SET_HUB_IP: 'SET_HUB_IP',
   SET_MIN_ACTIVE: 'SET_MIN_ACTIVE',
   SET_MAX_ACTIVE: 'SET_MAX_ACTIVE',
@@ -70,6 +72,7 @@ export const performanceReducer = (
         state.config.hubIP || '',
         state.config.username,
         action.payload.id,
+        'on',
         action.payload.state,
       );
       return {
@@ -87,6 +90,33 @@ export const performanceReducer = (
         lightbulbs: state.lightbulbs.map((lightbulb) => {
           if (lightbulb.id === action.payload.id) {
             lightbulb.name = action.payload.name;
+          }
+          return lightbulb;
+        }),
+      };
+    case ACTIONS.SET_LIGHTBULB_BRIGHTNESS:
+      LightbulbDiscoveryService.setLightbulbState(
+        state.config.hubIP || '',
+        state.config.username,
+        action.payload.id,
+        'bri',
+        action.payload.brightness,
+      );
+      return {
+        ...state,
+        lightbulbs: state.lightbulbs.map((lightbulb) => {
+          if (lightbulb.id === action.payload.id) {
+            lightbulb.brightness = action.payload.brightness;
+          }
+          return lightbulb;
+        }),
+      };
+    case ACTIONS.SET_LIGHTBULB_CAPTION:
+      return {
+        ...state,
+        lightbulbs: state.lightbulbs.map((lightbulb) => {
+          if (lightbulb.id === action.payload.id) {
+            lightbulb.caption = action.payload.caption;
           }
           return lightbulb;
         }),

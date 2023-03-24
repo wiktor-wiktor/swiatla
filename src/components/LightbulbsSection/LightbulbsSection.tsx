@@ -1,5 +1,6 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { PerformanceContext } from '../../contexts/PerformanceContext';
+import { useLightbulbsLastSettings } from '../../hooks/useLightbulbsLastSettings';
 import Section from '../../layout/Section';
 import { ACTIONS } from '../../reducers/performanceReducer';
 import { lightbulb } from '../../types';
@@ -8,6 +9,7 @@ import styles from './lightbulbs-section.module.scss';
 
 const LightbulbPreview = ({ lightbulb }: { lightbulb: lightbulb }) => {
   const performanceState = useContext(PerformanceContext);
+
   const handleClick = () => {
     performanceState.dispatch({
       type: ACTIONS.SET_LIGHTBULB_STATE,
@@ -17,7 +19,7 @@ const LightbulbPreview = ({ lightbulb }: { lightbulb: lightbulb }) => {
       },
     });
   };
-  console.log('lightbulb', lightbulb);
+
   return (
     <div
       onClick={handleClick}
@@ -36,12 +38,101 @@ const LightbulbPreview = ({ lightbulb }: { lightbulb: lightbulb }) => {
 
 export const LightbulbsSection = () => {
   const performanceState = useContext(PerformanceContext);
+  const [lightbulbsLastSettings, setLightbulbsLastSettings] =
+    useLightbulbsLastSettings();
+
+  useEffect(() => {
+    performanceState.state.lightbulbs.forEach((lightbulb) => {
+      if (
+        lightbulbsLastSettings[lightbulb.id] !== undefined &&
+        lightbulbsLastSettings[lightbulb.id].bri !== lightbulb.brightness
+      ) {
+        performanceState.dispatch({
+          type: ACTIONS.SET_LIGHTBULB_BRIGHTNESS,
+          payload: {
+            id: lightbulb.id,
+            brightness: lightbulbsLastSettings[lightbulb.id].bri,
+          },
+        });
+      }
+
+      if (
+        lightbulbsLastSettings[lightbulb.id] !== undefined &&
+        lightbulbsLastSettings[lightbulb.id].caption !== lightbulb.caption
+      ) {
+        performanceState.dispatch({
+          type: ACTIONS.SET_LIGHTBULB_CAPTION,
+          payload: {
+            id: lightbulb.id,
+            state: lightbulbsLastSettings[lightbulb.id].caption,
+          },
+        });
+      }
+    });
+  }, []);
 
   return (
     <Section className={styles.lightbulbsSection} title="Lightbulbs">
-      {performanceState.state.lightbulbs.map((lightbulb) => {
-        return <LightbulbPreview key={lightbulb.id} lightbulb={lightbulb} />;
-      })}
+      <div className={styles.lightbulbsTable}>
+        {performanceState.state.lightbulbs.map((lightbulb) => {
+          return (
+            <div className={styles.row} key={lightbulb.id}>
+              <div className={styles.cell}>{lightbulb.id}</div>
+              <div className={styles.cell}>{lightbulb.name}</div>
+              <div className={styles.cell}>
+                <input
+                  className={styles.bulbCaptionInput}
+                  type="text"
+                  value={
+                    lightbulb.caption ||
+                    lightbulbsLastSettings[lightbulb.id]?.caption ||
+                    ''
+                  }
+                  onChange={(e) => {
+                    performanceState.dispatch({
+                      type: ACTIONS.SET_LIGHTBULB_CAPTION,
+                      payload: {
+                        id: lightbulb.id,
+                        caption: e.target.value,
+                      },
+                    });
+                    setLightbulbsLastSettings({
+                      ...lightbulbsLastSettings,
+                      [lightbulb.id]: {
+                        ...lightbulbsLastSettings[lightbulb.id],
+                        caption: e.target.value,
+                      },
+                    });
+                  }}
+                />
+              </div>
+              <div className={styles.cell}>
+                {lightbulb.state ? 'on' : 'off'}
+              </div>
+              <div className={styles.cell}>
+                {lightbulb.reachable ? 'reachable' : 'unreachable'}
+              </div>
+              <div className={styles.cell}>
+                <input
+                  type="range"
+                  min={0}
+                  max={255}
+                  value={lightbulb.brightness}
+                  onChange={(e) => {
+                    performanceState.dispatch({
+                      type: ACTIONS.SET_LIGHTBULB_BRIGHTNESS,
+                      payload: {
+                        id: lightbulb.id,
+                        brightness: parseInt(e.target.value),
+                      },
+                    });
+                  }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </Section>
   );
 };
