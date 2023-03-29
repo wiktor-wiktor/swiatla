@@ -25,5 +25,10 @@ body {
 #root {
   height: 100%;
   width: 100%;
+}
 
+.section {
+  background-color: #F8F5E407;
+  margin: 2rem 0;
+  padding: 2rem;
 }

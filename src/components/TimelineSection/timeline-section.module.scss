@@ -61,11 +61,15 @@
         &.currentPosition {
           background-color: var(--color-green);
         }
+
+        &.currentPosition.on {
+          background-color: var(--color-yellow);
+        }
       }
 
       .rowLabel {
         display: inline-block;
-        width: 100px;
+        width: 120px;
         text-align: right;
         padding-right: 10px;
       }

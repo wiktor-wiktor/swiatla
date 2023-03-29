@@ -28,6 +28,44 @@ export const INITIAL_STATE: performance = {
   isConnected: false,
 };
 
+const performLightbulbStateChange = (
+  state: performance,
+  action: { type: string; payload: any },
+) => {
+  const set = (on: boolean) => {
+    LightbulbDiscoveryService.setLightbulbState(
+      state.config.hubIP || '',
+      state.config.username,
+      action.payload.id,
+      'on',
+      on,
+    );
+  };
+
+  const newState = action.payload.state;
+  // refactor the filtering - state.lightbulbs should be an object
+  if (
+    newState ===
+    state.lightbulbs.filter((l) => l.id === action.payload.id)[0].state
+  ) {
+    return;
+  }
+  // prettier-ignore
+  if (newState) {
+    const timeInterval = 1200;
+    set(true);
+    setTimeout(() => { set(false);}, timeInterval * 1);
+    setTimeout(() => { set(true); }, timeInterval * 2);
+    setTimeout(() => { set(false);}, timeInterval * 3);
+    setTimeout(() => { set(true); }, timeInterval * 4);
+  } else {
+    const timeInterval = 1200;
+    set(false);
+    setTimeout(() => { set(true); }, timeInterval * 1);
+    setTimeout(() => { set(false); }, timeInterval * 2);
+  }
+};
+
 export const ACTIONS = {
   ADD_LIGHTBULB: 'ADD_LIGHTBULB',
   SET_LIGHTBULB_STATE: 'SET_LIGHTBULB_STATE',
@@ -71,13 +109,7 @@ export const performanceReducer = (
         lightbulbs: [...state.lightbulbs, action.payload],
       };
     case ACTIONS.SET_LIGHTBULB_STATE:
-      LightbulbDiscoveryService.setLightbulbState(
-        state.config.hubIP || '',
-        state.config.username,
-        action.payload.id,
-        'on',
-        action.payload.state,
-      );
+      performLightbulbStateChange(state, action);
       return {
         ...state,
         lightbulbs: state.lightbulbs.map((lightbulb) => {

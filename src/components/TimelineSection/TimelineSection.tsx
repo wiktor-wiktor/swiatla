@@ -6,11 +6,13 @@ import { PerformanceContext } from '../../contexts/PerformanceContext';
 import { ACTIONS } from '../../reducers/performanceReducer';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 
+const TIME_PER_SET = 8000;
+
 export const TimelineSection = () => {
   const [playbackState, setPlaybackState] = useState<
     'playing' | 'paused' | 'stopped'
   >('stopped');
-  const [length, setLength] = useState(24);
+  const [length, setLength] = useState(35);
   const currentPosition = useRef(0);
 
   const [timelineMatrix, setTimelineMatrix] = useLocalStorage(
@@ -76,7 +78,7 @@ export const TimelineSection = () => {
             });
           }
         });
-      }, 2300);
+      }, TIME_PER_SET);
       return () => clearInterval(interval);
     }
   }, [playbackState, length]);
@@ -112,7 +114,13 @@ export const TimelineSection = () => {
           <div className={styles.rowLabel}></div>
           {[...Array(length)].map((_, index) => {
             return (
-              <div key={index} className={styles.timeLabel}>
+              <div
+                key={index}
+                className={styles.timeLabel}
+                onClick={() => {
+                  currentPosition.current = index;
+                }}
+              >
                 {index}
               </div>
             );
